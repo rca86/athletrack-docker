@@ -30,7 +30,7 @@ services:
         networks:
           - athletrack
 
-    mysql-yingyang:
+    mysql-athletrack:
         image: mysql/mysql-server:5.6.29
         ports:
           - 3306:3306

@@ -1,0 +1,46 @@
+version: '2'
+services:
+    nginx-athletrack:
+        image: nginx:latest
+        ports:
+          - 80:80
+        volumes:
+          - /data/sites/mars:/data/sites
+          - /data/docker-athletrack/nginx/sites-enabled/athletrack.conf:/etc/nginx/sites-enabled/athletrack.conf
+          - /data/docker-athletrack/nginx/nginx.conf:/etc/nginx/nginx.conf
+        working_dir: /data/sites/athletrack.com
+        depends_on:
+          - php-athletrack
+        networks:
+          athletrack:
+            aliases:
+              - athletrack.com
+              - www.athletrack.com
+
+    php-athletrack:
+        image: ${PHP7_FPM_IMAGE}
+        environment:
+          XDEBUG_CONFIG: remote_host=${XDEBUG_REMOTE_HOST}
+        volumes:
+          - /data/sites/mars:/data/sites
+          - /data/docker-athletrack/sites-conf/common/php/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
+          - /data/docker-athletrack/common/php/upload.ini:/usr/local/etc/php/conf.d/upload.ini
+          - /data/docker-athletrack/common/php/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
+          - /data/docker-athletrack/common/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        networks:
+          - athletrack
+
+    mysql-yingyang:
+        image: mysql/mysql-server:5.6.29
+        ports:
+          - 3306:3306
+        environment:
+          - MYSQL_ROOT_PASSWORD=carnyx007
+        volumes:
+          - /data/mysql/athletrack:/var/lib/mysql
+        networks:
+            athletrack:
+
+
+networks:
+    athletrack:
